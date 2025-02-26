@@ -91,10 +91,8 @@
   ],
   "robotJoysticks": [
     {
-      "guid": "030000005e0400008e02000020010000"
-    },
-    {
-      "guid": "030000005e0400008e02000020010000"
+      "guid": "Keyboard0"
     }
-  ]
+  ],
+  "useEstopHotkey": true
 }

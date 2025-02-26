@@ -1,60 +1,43 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import swervelib.SwerveDrive;
+import swervelib.imu.SwerveIMU;
 import swervelib.parser.SwerveParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 public class SwerveSubsystem implements Subsystem {
 
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "YAGSLConfig");
-    public SwerveDrive swerveDrive;
+    public static SwerveDrive swerveDrive;
 
     public SwerveSubsystem() {
         try {
-            swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(90);
+            swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(15);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.setupPathPlanner();
     }
-    
-    /**
-     * Drive the robot given a chassis field oriented velocity.
-     *
-     * @param velocity Velocity according to the field.
-     * @return
-     */
-    public Command driveFieldOrientedSimple(ChassisSpeeds velocity) {
-        swerveDrive.driveFieldOriented(velocity);
-        return null;
-    }
-    
-    public Command driveFieldOriented(double xMovement, double yMovement, double rotationSpeed, boolean isFieldRelative,
-                                      boolean isOpenLoop) {
-        Translation2d movementTranslation = new Translation2d(xMovement, yMovement);
-        swerveDrive.drive(movementTranslation, rotationSpeed, isFieldRelative, isOpenLoop);
-        return null;
-    }
-    public void setupPathPlanner()
-    {
+
+    public void setupPathPlanner() {
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
         RobotConfig config;
-        try
-        {
+        try {
             config = RobotConfig.fromGUISettings();
 
             final boolean enableFeedforward = true;
@@ -67,15 +50,13 @@ public class SwerveSubsystem implements Subsystem {
                     this::getRobotVelocity,
                     // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                     (speedsRobotRelative, moduleFeedForwards) -> {
-                        if (enableFeedforward)
-                        {
+                        if (enableFeedforward) {
                             swerveDrive.drive(
                                     speedsRobotRelative,
                                     swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
                                     moduleFeedForwards.linearForces()
                             );
-                        } else
-                        {
+                        } else {
                             swerveDrive.setChassisSpeeds(speedsRobotRelative);
                         }
                     },
@@ -95,8 +76,7 @@ public class SwerveSubsystem implements Subsystem {
                         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
                         var alliance = DriverStation.getAlliance();
-                        if (alliance.isPresent())
-                        {
+                        if (alliance.isPresent()) {
                             return alliance.get() == DriverStation.Alliance.Red;
                         }
                         return false;
@@ -105,19 +85,11 @@ public class SwerveSubsystem implements Subsystem {
                     // Reference to this subsystem to set requirements
             );
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             // Handle exception as needed
             DriverStation.reportError("Failed to initialize swerveSubsystem PathPlanner: " + e.getMessage(), e.getStackTrace());
             // Consider whether the robot should continue or disable itself
-
-        }
-
-        //Preload PathPlanner Path finding
-        // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-        PathfindingCommand.warmupCommand().schedule();
-    }
-
+        } }
     public Pose2d getPose()
     {
         return swerveDrive.getPose();
@@ -129,5 +101,17 @@ public class SwerveSubsystem implements Subsystem {
     public void resetOdometry(Pose2d initialHolonomicPose)
     {
         swerveDrive.resetOdometry(initialHolonomicPose);
+    }
+    public SwerveIMU fetchIMU() {
+        return swerveDrive.getGyro();
+    }
+    public static SwerveDrive fetchSwerve() {
+        return swerveDrive;
+    }
+    public void driveFieldOriented(ChassisSpeeds velocity ) {
+        swerveDrive.driveFieldOriented(velocity);
+    }
+    public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
+        return run( () -> swerveDrive.driveFieldOriented(velocity.get()));
     }
 };
