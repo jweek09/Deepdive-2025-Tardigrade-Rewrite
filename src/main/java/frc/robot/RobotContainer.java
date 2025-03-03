@@ -5,7 +5,10 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Constants.SwerveConstants;
@@ -37,6 +40,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
+    Shuffleboard.getTab("Autonomous")
+            .add("Autonomous Mode", autoChooser)
+            .withWidget(BuiltInWidgets.kComboBoxChooser);
+    Shuffleboard.getTab("Reset Odometry:")
+            .add("Reset in front of blue reef", kSwerveSubsystem.resetOdometryInFrontOfBlueReef())
+            .withWidget(BuiltInWidgets.kCommand);
 
     // Configure the trigger bindings
     configureBindings();
@@ -46,7 +55,7 @@ public class RobotContainer {
                     () -> kDriverController.getLeftX() * -1)
             .withControllerRotationAxis(kDriverController::getRightX)
             .deadband(Constants.SwerveConstants.kDeadband)
-            .scaleTranslation(0.8)
+            .scaleTranslation(1)
             .allianceRelativeControl(true);
 
     SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis
@@ -61,6 +70,14 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocity = kSwerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
     kSwerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
+
+//    Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveCommand(
+//            () -> MathUtil.applyDeadband(kDriverController.getLeftY(), .5),
+//            () -> MathUtil.applyDeadband(kDriverController.getLeftX(), .5),
+//            () -> kDriverController.getRightX(),
+//            () -> kDriverController.getRightY());
+//
+//    kSwerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngle);
   ;}
 
   /**
@@ -73,6 +90,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    kDriverController.b().onTrue(kSwerveSubsystem.centerModulesCommand());
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -80,6 +98,5 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    autoChooser.setDefaultOption("New Auto", AutoBuilder.buildAuto("New Auto"));
     return autoChooser.getSelected();
   }}

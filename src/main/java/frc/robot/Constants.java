@@ -16,10 +16,8 @@ package frc.robot;
 public final class Constants {
   public static class SwerveConstants {
     public static final int kDriverControllerPort = 0;
-    public static final boolean kCANOpenLoop = false;
     public static final boolean kWheelsAutoCenter = false;
     public static final boolean kYAGSLHeadingCorrection = false;
-    public static final boolean kFieldRelativeDrive = true;
     public static final double kDeadband = 0.05;
   }
 }
