@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.Autos;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -30,6 +31,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem kSwerveSubsystem = new SwerveSubsystem();
+  private final ElevatorSubsystem kElevatorSubsystem = new ElevatorSubsystem();
 
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -43,8 +45,11 @@ public class RobotContainer {
     Shuffleboard.getTab("Autonomous")
             .add("Autonomous Mode", autoChooser)
             .withWidget(BuiltInWidgets.kComboBoxChooser);
-    Shuffleboard.getTab("Reset Odometry:")
+    Shuffleboard.getTab("Testing Commands")
             .add("Reset in front of blue reef", kSwerveSubsystem.resetOdometryInFrontOfBlueReef())
+            .withWidget(BuiltInWidgets.kCommand);
+    Shuffleboard.getTab("Testing Commands")
+            .add("Elevator do a little thing", kElevatorSubsystem.goUpALittleForTestingAndDeleteThisCommandLater())
             .withWidget(BuiltInWidgets.kCommand);
 
     // Configure the trigger bindings
@@ -65,6 +70,7 @@ public class RobotContainer {
     kSwerveSubsystem.fetchIMU().clearStickyFaults();
     kSwerveSubsystem.fetchSwerve().setAutoCenteringModules(SwerveConstants.kWheelsAutoCenter);
     kSwerveSubsystem.fetchSwerve().setHeadingCorrection(SwerveConstants.kYAGSLHeadingCorrection);
+    kSwerveSubsystem.fetchSwerve().setAngularVelocityCompensation(true, true, SwerveConstants.kVelocityAngleCorrection);
 
     Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAngularVelocity = kSwerveSubsystem.driveFieldOriented(driveAngularVelocity);

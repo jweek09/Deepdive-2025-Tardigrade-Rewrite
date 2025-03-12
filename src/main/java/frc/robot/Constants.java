@@ -19,5 +19,10 @@ public final class Constants {
     public static final boolean kWheelsAutoCenter = false;
     public static final boolean kYAGSLHeadingCorrection = false;
     public static final double kDeadband = 0.05;
+    public static final double kVelocityAngleCorrection = 0.1;
+  }
+  public static class ElevatorConstants {
+    public static final int kLeftElevatorMotor = 16;
+    public static final int kRightElevatorMotor = 17;
   }
 }
