@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ElevatorConstants;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import java.util.concurrent.TimeUnit;
 
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 public class ElevatorSubsystem {
@@ -18,14 +20,23 @@ public class ElevatorSubsystem {
     RelativeEncoder kPrimaryEncoder = kLeftMotorSparkMax.getEncoder();
      public ElevatorSubsystem() {
          config.idleMode(IdleMode.kBrake);
+         config.inverted(true);
          kLeftMotorSparkMax.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-         config.follow(kLeftMotorSparkMax.getDeviceId());
+         config.inverted(false);
          kRightMotorSparkMax.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
          kPrimaryEncoder.setPosition(0);
      }
      public Command goUpALittleForTestingAndDeleteThisCommandLater() {
-         return runOnce( () -> {
-             kLeftMotorSparkMax.set(0.4);
+         return run( () -> {
+             kLeftMotorSparkMax.set(0.1);
+             kRightMotorSparkMax.set(0.1);
+             try {
+                 Thread.sleep(3000);
+             } catch (InterruptedException e) {
+                 throw new RuntimeException(e);
+             }
+             kLeftMotorSparkMax.set(0);
+             kRightMotorSparkMax.set(0);
          });
      }
 }

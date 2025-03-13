@@ -42,7 +42,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
-    Shuffleboard.getTab("Autonomous")
+    Shuffleboard.getTab("SmartDashboard")
             .add("Autonomous Mode", autoChooser)
             .withWidget(BuiltInWidgets.kComboBoxChooser);
     Shuffleboard.getTab("Testing Commands")

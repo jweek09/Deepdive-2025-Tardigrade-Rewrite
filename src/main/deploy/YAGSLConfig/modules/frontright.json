@@ -2,7 +2,7 @@
   "drive": {
     "type": "sparkmax_neo",
     "id": 12,
-    "canbus": null
+    "canbus":          null
   },
   "angle": {
     "type": "sparkmax_neo",

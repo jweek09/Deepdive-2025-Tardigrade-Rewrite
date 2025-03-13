@@ -151,7 +151,7 @@ public class SwerveSubsystem implements Subsystem {
     }
     public Command resetOdometryInFrontOfBlueReef() {
         Pose2d inFrontOfBlueReef = new Pose2d(7, 4, Rotation2d.fromDegrees(180));
-        return runOnce( () -> {
+        return run( () -> {
             this.resetOdometry(inFrontOfBlueReef);
         });
     }
