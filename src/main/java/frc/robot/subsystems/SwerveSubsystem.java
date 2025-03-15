@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 public class SwerveSubsystem implements Subsystem {
 
-    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "YAGSLConfig");
+    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
     public static SwerveDrive swerveDrive;
 
     public SwerveSubsystem() {

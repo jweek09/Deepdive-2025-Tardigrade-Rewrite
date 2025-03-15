@@ -42,7 +42,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
-    Shuffleboard.getTab("SmartDashboard")
+    Shuffleboard.getTab("Autochooser")
             .add("Autonomous Mode", autoChooser)
             .withWidget(BuiltInWidgets.kComboBoxChooser);
     Shuffleboard.getTab("Testing Commands")
@@ -55,35 +55,35 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    SwerveInputStream driveAngularVelocity = SwerveInputStream.of(kSwerveSubsystem.fetchSwerve(),
-                    () -> kDriverController.getLeftY() * -1,
-                    () -> kDriverController.getLeftX() * -1)
-            .withControllerRotationAxis(kDriverController::getRightX)
-            .deadband(Constants.SwerveConstants.kDeadband)
-            .scaleTranslation(1)
-            .allianceRelativeControl(true);
-
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis
-            (kDriverController::getRightX, kDriverController::getRightY).headingWhile(true);
-
-    kSwerveSubsystem.fetchIMU().factoryDefault();
-    kSwerveSubsystem.fetchIMU().clearStickyFaults();
-    kSwerveSubsystem.fetchSwerve().setAutoCenteringModules(SwerveConstants.kWheelsAutoCenter);
-    kSwerveSubsystem.fetchSwerve().setHeadingCorrection(SwerveConstants.kYAGSLHeadingCorrection);
-    kSwerveSubsystem.fetchSwerve().setAngularVelocityCompensation(true, true, SwerveConstants.kVelocityAngleCorrection);
-
-    Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAngularVelocity = kSwerveSubsystem.driveFieldOriented(driveAngularVelocity);
-
-    kSwerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
-
-//    Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveCommand(
-//            () -> MathUtil.applyDeadband(kDriverController.getLeftY(), .5),
-//            () -> MathUtil.applyDeadband(kDriverController.getLeftX(), .5),
-//            () -> kDriverController.getRightX(),
-//            () -> kDriverController.getRightY());
+//    SwerveInputStream driveAngularVelocity = SwerveInputStream.of(kSwerveSubsystem.fetchSwerve(),
+//                    () -> kDriverController.getLeftY() * -1,
+//                    () -> kDriverController.getLeftX() * -1)
+//            .withControllerRotationAxis(kDriverController::getRightX)
+//            .deadband(Constants.SwerveConstants.kDeadband)
+//            .scaleTranslation(1)
+//            .allianceRelativeControl(true);
 //
-//    kSwerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngle);
+//    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis
+//            (kDriverController::getRightX, kDriverController::getRightY).headingWhile(true);
+//
+//    kSwerveSubsystem.fetchIMU().factoryDefault();
+//    kSwerveSubsystem.fetchIMU().clearStickyFaults();
+//    kSwerveSubsystem.fetchSwerve().setAutoCenteringModules(SwerveConstants.kWheelsAutoCenter);
+//    kSwerveSubsystem.fetchSwerve().setHeadingCorrection(SwerveConstants.kYAGSLHeadingCorrection);
+//    kSwerveSubsystem.fetchSwerve().setAngularVelocityCompensation(true, true, SwerveConstants.kVelocityAngleCorrection);
+//
+//    Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveFieldOriented(driveDirectAngle);
+//    Command driveFieldOrientedAngularVelocity = kSwerveSubsystem.driveFieldOriented(driveAngularVelocity);
+
+    //kSwerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
+
+    Command driveFieldOrientedDirectAngle = kSwerveSubsystem.driveCommand(
+            () -> MathUtil.applyDeadband(kDriverController.getLeftY(), .05),
+            () -> MathUtil.applyDeadband(kDriverController.getLeftX(), .05),
+            () -> kDriverController.getRightX(),
+            () -> kDriverController.getRightY());
+
+    kSwerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngle);
   ;}
 
   /**
